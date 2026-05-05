@@ -239,8 +239,17 @@ interface Props {
 export default function CoursePage({ courseTitle, onBack }: Props) {
   const course = COURSES_DATA[courseTitle];
   const [openModules, setOpenModules] = useState<number[]>([0]);
+  const [openLesson, setOpenLesson] = useState<string | null>(null);
 
-  if (!course) return null;
+  function handleOpenLesson(title: string) {
+    setOpenLesson(title);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+
+  function handleCloseLesson() {
+    setOpenLesson(null);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
 
   function toggleModule(idx: number) {
     setOpenModules((prev) =>
@@ -248,7 +257,22 @@ export default function CoursePage({ courseTitle, onBack }: Props) {
     );
   }
 
+  if (!course) return null;
+
   const totalLessons = course.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+
+  if (openLesson) {
+    return (
+      <LessonPage
+        lessonTitle={openLesson}
+        courseTitle={courseTitle}
+        tagColor={course.tagColor}
+        onBack={handleCloseLesson}
+        onNext={(title) => { setOpenLesson(title); window.scrollTo({ top: 0, behavior: "instant" }); }}
+        onPrev={(title) => { setOpenLesson(title); window.scrollTo({ top: 0, behavior: "instant" }); }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground font-golos">
