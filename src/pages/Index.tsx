@@ -151,7 +151,9 @@ export default function Index() {
   const [activeExample, setActiveExample] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState<string | null>(null);
+  const [outputError, setOutputError] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [editedCode, setEditedCode] = useState<Record<number, string>>({});
   const [openArticle, setOpenArticle] = useState<string | null>(null);
   const [openCourse, setOpenCourse] = useState<string | null>(null);
 
@@ -184,12 +186,35 @@ export default function Index() {
   }
 
   function runCode() {
+    const ex = CODE_EXAMPLES[activeExample];
+    const code = editedCode[activeExample] ?? ex.code;
     setIsRunning(true);
     setOutput(null);
+    setOutputError(false);
+
     setTimeout(() => {
-      setOutput(CODE_EXAMPLES[activeExample].output);
+      if (ex.lang === "JavaScript") {
+        const lines: string[] = [];
+        const fakeConsole = {
+          log: (...args: unknown[]) => lines.push(args.map(a => typeof a === "object" ? JSON.stringify(a, null, 2) : String(a)).join(" ")),
+          error: (...args: unknown[]) => lines.push("❌ " + args.map(String).join(" ")),
+          warn: (...args: unknown[]) => lines.push("⚠️ " + args.map(String).join(" ")),
+        };
+        try {
+          const fn = new Function("console", code);
+          fn(fakeConsole);
+          setOutput(lines.length ? lines.join("\n") : "(нет вывода)");
+          setOutputError(false);
+        } catch (e: unknown) {
+          setOutput(e instanceof Error ? e.message : String(e));
+          setOutputError(true);
+        }
+      } else {
+        setOutput(ex.output);
+        setOutputError(false);
+      }
       setIsRunning(false);
-    }, 900);
+    }, 500);
   }
 
   return (
@@ -373,8 +398,8 @@ export default function Index() {
 
           <div className="grid md:grid-cols-2 gap-0">
             {/* Code panel */}
-            <div className="p-6 border-b md:border-b-0 md:border-r border-white/8 relative scanline">
-              <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col border-b md:border-b-0 md:border-r border-white/8">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/6">
                 <span
                   className="text-xs font-mono font-bold px-2 py-1 rounded-md"
                   style={{
@@ -385,28 +410,44 @@ export default function Index() {
                 >
                   {CODE_EXAMPLES[activeExample].lang}
                 </span>
-                <button
-                  onClick={runCode}
-                  disabled={isRunning}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-black transition-all hover:opacity-90 disabled:opacity-60"
-                  style={{ background: CODE_EXAMPLES[activeExample].color }}
-                >
-                  {isRunning ? (
-                    <>
-                      <Icon name="Loader2" size={14} className="animate-spin" />
-                      Запуск...
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="Play" size={14} />
-                      Запустить
-                    </>
+                <div className="flex items-center gap-2">
+                  {editedCode[activeExample] !== undefined && (
+                    <button
+                      onClick={() => {
+                        setEditedCode(p => { const n = { ...p }; delete n[activeExample]; return n; });
+                        setOutput(null);
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-muted-foreground glass hover:text-foreground transition-colors"
+                    >
+                      <Icon name="RotateCcw" size={12} />
+                      Сбросить
+                    </button>
                   )}
-                </button>
+                  <button
+                    onClick={runCode}
+                    disabled={isRunning}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold text-black transition-all hover:opacity-90 disabled:opacity-60"
+                    style={{ background: CODE_EXAMPLES[activeExample].color }}
+                  >
+                    {isRunning ? (
+                      <><Icon name="Loader2" size={14} className="animate-spin" />Запуск...</>
+                    ) : (
+                      <><Icon name="Play" size={14} />Запустить</>
+                    )}
+                  </button>
+                </div>
               </div>
-              <pre className="font-mono text-sm leading-relaxed text-foreground/90 overflow-x-auto whitespace-pre-wrap">
-                <code>{CODE_EXAMPLES[activeExample].code}</code>
-              </pre>
+              <textarea
+                value={editedCode[activeExample] ?? CODE_EXAMPLES[activeExample].code}
+                onChange={(e) => {
+                  setEditedCode(p => ({ ...p, [activeExample]: e.target.value }));
+                  setOutput(null);
+                }}
+                className="flex-1 p-6 font-mono text-sm leading-relaxed text-foreground/90 bg-transparent resize-none outline-none min-h-[220px]"
+                spellCheck={false}
+                autoCapitalize="off"
+                autoCorrect="off"
+              />
             </div>
 
             {/* Output panel */}
@@ -414,9 +455,12 @@ export default function Index() {
               <div className="flex items-center gap-2 mb-4">
                 <Icon name="Terminal" size={14} className="text-muted-foreground" />
                 <span className="text-xs font-mono text-muted-foreground">Вывод</span>
+                {CODE_EXAMPLES[activeExample].lang !== "JavaScript" && (
+                  <span className="text-xs text-muted-foreground/50 ml-auto font-mono">симуляция</span>
+                )}
               </div>
               {output ? (
-                <pre className="font-mono text-sm text-green-400 leading-relaxed whitespace-pre-wrap animate-fade-up">
+                <pre className={`font-mono text-sm leading-relaxed whitespace-pre-wrap animate-fade-up ${outputError ? "text-red-400" : "text-green-400"}`}>
                   {output}
                 </pre>
               ) : isRunning ? (
