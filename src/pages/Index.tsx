@@ -304,7 +304,10 @@ export default function Index() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-up-delay-3">
             <button
-              onClick={() => setActiveSection("Обучение")}
+              onClick={() => {
+                setActiveSection("Обучение");
+                document.getElementById("courses")?.scrollIntoView({ behavior: "smooth" });
+              }}
               className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-white text-lg transition-all hover:scale-105 glow-purple"
               style={{ background: "linear-gradient(135deg, #a855f7 0%, #22d3ee 100%)" }}
             >
@@ -553,41 +556,6 @@ export default function Index() {
               </div>
             </article>
           ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-24">
-        <div
-          className="rounded-3xl p-10 sm:p-16 text-center relative overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(168,85,247,0.2) 0%, rgba(34,211,238,0.15) 50%, rgba(244,114,182,0.2) 100%)",
-            border: "1px solid rgba(168,85,247,0.2)",
-          }}
-        >
-          <div
-            className="absolute inset-0 opacity-30"
-            style={{
-              background:
-                "radial-gradient(ellipse at center, rgba(168,85,247,0.3) 0%, transparent 70%)",
-            }}
-          />
-          <div className="relative z-10">
-            <h2 className="text-4xl sm:text-6xl font-black mb-6">
-              Готов стать <span className="gradient-text">разработчиком?</span>
-            </h2>
-            <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
-              Первые 3 урока бесплатно. Без кредитной карты. Начни сегодня.
-            </p>
-            <button
-              className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl font-black text-xl text-white transition-all hover:scale-105 glow-purple"
-              style={{ background: "linear-gradient(135deg, #a855f7 0%, #f472b6 100%)" }}
-            >
-              <Icon name="Rocket" size={22} />
-              Поехали!
-            </button>
-          </div>
         </div>
       </section>
 
