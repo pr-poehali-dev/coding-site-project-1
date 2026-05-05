@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
 import ArticlePage from "@/components/ArticlePage";
+import CoursePage from "@/components/CoursePage";
 
 const NAV_LINKS = ["Главная", "Обучение", "Статьи"];
 
@@ -152,6 +153,7 @@ export default function Index() {
   const [output, setOutput] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openArticle, setOpenArticle] = useState<string | null>(null);
+  const [openCourse, setOpenCourse] = useState<string | null>(null);
 
   function handleOpenArticle(title: string) {
     setOpenArticle(title);
@@ -163,13 +165,22 @@ export default function Index() {
     setTimeout(() => document.getElementById("articles")?.scrollIntoView({ behavior: "smooth" }), 50);
   }
 
+  function handleOpenCourse(title: string) {
+    setOpenCourse(title);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+
+  function handleCloseCourse() {
+    setOpenCourse(null);
+    setTimeout(() => document.getElementById("courses")?.scrollIntoView({ behavior: "smooth" }), 50);
+  }
+
   if (openArticle) {
-    return (
-      <ArticlePage
-        articleTitle={openArticle}
-        onBack={handleCloseArticle}
-      />
-    );
+    return <ArticlePage articleTitle={openArticle} onBack={handleCloseArticle} />;
+  }
+
+  if (openCourse) {
+    return <CoursePage courseTitle={openCourse} onBack={handleCloseCourse} />;
   }
 
   function runCode() {
@@ -450,6 +461,7 @@ export default function Index() {
           {COURSES.map((course) => (
             <div
               key={course.title}
+              onClick={() => handleOpenCourse(course.title)}
               className={`glass rounded-2xl p-5 card-hover cursor-pointer border ${course.border} bg-gradient-to-br ${course.gradient}`}
             >
               <span
@@ -477,6 +489,7 @@ export default function Index() {
               <div className="mt-3 pt-3 border-t border-white/8 flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{course.level}</span>
                 <button
+                  onClick={(e) => { e.stopPropagation(); handleOpenCourse(course.title); }}
                   className="text-xs font-semibold flex items-center gap-1 hover:gap-2 transition-all"
                   style={{ color: course.tagColor }}
                 >
