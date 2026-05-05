@@ -408,6 +408,10 @@ export default function CoursePage({ courseTitle, onBack }: Props) {
         {/* CTA */}
         <div className="mt-12 text-center">
           <button
+            onClick={() => {
+              const firstFree = course.modules.flatMap(m => m.lessons).find(l => l.free);
+              if (firstFree) handleOpenLesson(firstFree.title);
+            }}
             className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl font-black text-lg text-black transition-all hover:scale-105"
             style={{ background: `linear-gradient(135deg, ${course.tagColor}, #a855f7)` }}
           >
