@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
+import ArticlePage from "@/components/ArticlePage";
 
 const NAV_LINKS = ["Главная", "Обучение", "Статьи"];
 
@@ -150,6 +151,19 @@ export default function Index() {
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openArticle, setOpenArticle] = useState<string | null>(null);
+
+  if (openArticle) {
+    return (
+      <ArticlePage
+        articleTitle={openArticle}
+        onBack={() => {
+          setOpenArticle(null);
+          setTimeout(() => document.getElementById("articles")?.scrollIntoView({ behavior: "smooth" }), 50);
+        }}
+      />
+    );
+  }
 
   function runCode() {
     setIsRunning(true);
@@ -496,6 +510,7 @@ export default function Index() {
           {ARTICLES.map((article) => (
             <article
               key={article.title}
+              onClick={() => setOpenArticle(article.title)}
               className="glass rounded-2xl p-6 card-hover cursor-pointer border border-white/6 group"
             >
               <div className="flex items-center justify-between mb-4">
@@ -518,7 +533,10 @@ export default function Index() {
                   <Icon name="Clock" size={12} />
                   {article.readTime} чтения
                 </span>
-                <button className="text-xs font-semibold text-primary flex items-center gap-1 hover:gap-2 transition-all">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setOpenArticle(article.title); }}
+                  className="text-xs font-semibold text-primary flex items-center gap-1 hover:gap-2 transition-all"
+                >
                   Читать <Icon name="ArrowRight" size={12} />
                 </button>
               </div>
