@@ -194,7 +194,11 @@ export default function Index() {
             {NAV_LINKS.map((link) => (
               <button
                 key={link}
-                onClick={() => setActiveSection(link)}
+                onClick={() => {
+                  setActiveSection(link);
+                  if (link === "Статьи") document.getElementById("articles")?.scrollIntoView({ behavior: "smooth" });
+                  if (link === "Обучение") document.getElementById("courses")?.scrollIntoView({ behavior: "smooth" });
+                }}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeSection === link
                     ? "bg-primary/20 text-primary"
@@ -227,7 +231,12 @@ export default function Index() {
             {NAV_LINKS.map((link) => (
               <button
                 key={link}
-                onClick={() => { setActiveSection(link); setMobileMenuOpen(false); }}
+                onClick={() => {
+                  setActiveSection(link);
+                  setMobileMenuOpen(false);
+                  if (link === "Статьи") setTimeout(() => document.getElementById("articles")?.scrollIntoView({ behavior: "smooth" }), 100);
+                  if (link === "Обучение") setTimeout(() => document.getElementById("courses")?.scrollIntoView({ behavior: "smooth" }), 100);
+                }}
                 className={`px-4 py-2 rounded-lg text-sm font-medium text-left transition-all ${
                   activeSection === link
                     ? "bg-primary/20 text-primary"
@@ -271,7 +280,10 @@ export default function Index() {
               Начать бесплатно
             </button>
             <button
-              onClick={() => setActiveSection("Статьи")}
+              onClick={() => {
+                setActiveSection("Статьи");
+                document.getElementById("articles")?.scrollIntoView({ behavior: "smooth" });
+              }}
               className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-foreground text-lg glass transition-all hover:bg-white/10"
             >
               <Icon name="FileText" size={18} />
@@ -407,7 +419,7 @@ export default function Index() {
       </section>
 
       {/* COURSES SECTION */}
-      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-28">
+      <section id="courses" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-28">
         <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
           <div>
             <span className="inline-block px-3 py-1 rounded-full text-xs font-mono font-bold text-purple-400 border border-purple-400/30 bg-purple-400/10 mb-4">
@@ -465,7 +477,7 @@ export default function Index() {
       </section>
 
       {/* ARTICLES SECTION */}
-      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-28">
+      <section id="articles" className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-28">
         <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
           <div>
             <span className="inline-block px-3 py-1 rounded-full text-xs font-mono font-bold text-pink-400 border border-pink-400/30 bg-pink-400/10 mb-4">
