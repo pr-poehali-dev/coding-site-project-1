@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
+import LessonPage from "@/components/LessonPage";
 
 interface Lesson {
   title: string;
