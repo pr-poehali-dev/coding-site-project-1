@@ -313,16 +313,7 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-up-delay-4">
-          {STATS.map((s) => (
-            <div key={s.label} className="glass rounded-2xl p-5 text-center card-hover">
-              <Icon name={s.icon as never} size={20} className="mx-auto mb-3 text-primary" />
-              <div className="text-2xl font-black gradient-text mb-1">{s.value}</div>
-              <div className="text-sm text-muted-foreground">{s.label}</div>
-            </div>
-          ))}
-        </div>
+
       </section>
 
       {/* INTERACTIVE CODE EDITOR */}
